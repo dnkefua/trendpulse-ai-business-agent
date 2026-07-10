@@ -33,6 +33,24 @@ export const GOOGLE_TRENDS_DATA = [
         desc: "Onboarding script auto-creating emails, Slack profiles, and licenses.",
         estVal: "$5,000 - $8,500 Contract"
       }
+    ],
+    recommendedLeads: [
+      {
+        name: "Mark Kuban",
+        title: "Technical Co-Founder @ AutomateFlow",
+        avatar: "MK",
+        postText: "We are expanding our B2B middleware automation. Looking for a Python Developer who has experience building robust custom Salesforce/Zendesk API connections. DM with your portfolio links!",
+        profileUrl: "https://www.linkedin.com/in/desmond-nkefua-data-analyst/",
+        budget: "$4,500 - $6,500 Contract"
+      },
+      {
+        name: "Jessica Lin",
+        title: "VP of Operations @ HealthFlow Logistics",
+        avatar: "JL",
+        postText: "Seeking a specialist to automate corporate helpdesk sorting with GPT API. Immediate contract.",
+        profileUrl: "https://www.linkedin.com/in/desmond-nkefua-data-analyst/",
+        budget: "$5,000 - $7,000 Contract"
+      }
     ]
   },
   {
@@ -69,11 +87,29 @@ export const GOOGLE_TRENDS_DATA = [
         desc: "Scrapes foreclosure registers and Zillow records to map cap rates.",
         estVal: "$7,000 - $11,000 Contract"
       }
+    ],
+    recommendedLeads: [
+      {
+        name: "David Vance",
+        title: "Founder @ B2B Apex Agency",
+        avatar: "DV",
+        postText: "We need a robust scraper built to parse off-market tax foreclosure registers. Must run automatically and compile report files. DM me.",
+        profileUrl: "https://www.linkedin.com/in/desmond-nkefua-data-analyst/",
+        budget: "$7,500 - $10,500 Contract"
+      },
+      {
+        name: "Rachel Stern",
+        title: "Operations Director @ Nexus Brands",
+        avatar: "RS",
+        postText: "Looking to hire a Python engineer to scrape product listings from 5 competitor websites daily into PostgreSQL database.",
+        profileUrl: "https://www.linkedin.com/in/desmond-nkefua-data-analyst/",
+        budget: "$3,000 - $4,500 Project"
+      }
     ]
   },
   {
     id: "gt-3",
-    keyword: "Power BI Executive Dashboards",
+    keyword: "Power BI Dashboards",
     growth: "+280% YOY",
     category: "Data Visualization",
     searchVolume: "110,000 / mo",
@@ -104,6 +140,24 @@ export const GOOGLE_TRENDS_DATA = [
         title: "Healthcare Clinic Patient Flow Visualization",
         desc: "Emergency room bottlenecks, doctor occupancy, and patient readmissions tracker.",
         estVal: "$4,000 - $8,500 Project"
+      }
+    ],
+    recommendedLeads: [
+      {
+        name: "Amanda Torres",
+        title: "Director of Marketing @ Horizon Digital",
+        avatar: "AT",
+        postText: "Need a Power BI consultant to build a sales performance dashboard consolidating data pipelines. Fast contract.",
+        profileUrl: "https://www.linkedin.com/in/desmond-nkefua-data-analyst/",
+        budget: "$3,500 - $5,500 Project"
+      },
+      {
+        name: "Dr. Robert Sterling",
+        title: "COO @ Premier Health Network",
+        avatar: "RS",
+        postText: "We need Tableau / Power BI charts mapping patient readmission metrics. Looking for healthcare analytics experience.",
+        profileUrl: "https://www.linkedin.com/in/desmond-nkefua-data-analyst/",
+        budget: "$4,000 - $7,500 Project"
       }
     ]
   },
@@ -136,6 +190,16 @@ export const GOOGLE_TRENDS_DATA = [
         desc: "Python/GAS script retrieving Google, Meta, and TikTok ad totals automatically.",
         estVal: "$1,500 - $3,000 Project"
       }
+    ],
+    recommendedLeads: [
+      {
+        name: "Laura Bennett",
+        title: "VP of HR @ TechPulse Global",
+        avatar: "LB",
+        postText: "Seeking a developer to write a custom Apps Script syncing HR onboarding spreadsheets with Slack channels.",
+        profileUrl: "https://www.linkedin.com/in/desmond-nkefua-data-analyst/",
+        budget: "$1,500 - $3,000 Project"
+      }
     ]
   },
   {
@@ -166,6 +230,16 @@ export const GOOGLE_TRENDS_DATA = [
         title: "Social Media Ticker Sentiment Telegram Alert Engine",
         desc: "Scrapes Twitter/Reddit for tickers and fires Telegram sentiment spike alerts.",
         estVal: "$4,500 - $8,000 Build"
+      }
+    ],
+    recommendedLeads: [
+      {
+        name: "Julian Vance",
+        title: "Managing Partner @ Nexus Algo",
+        avatar: "JV",
+        postText: "We need an NLP sentiment scraper to monitor crypto tickers on Reddit and send alerts to a private Telegram channel. Immediate budget available.",
+        profileUrl: "https://www.linkedin.com/in/desmond-nkefua-data-analyst/",
+        budget: "$4,500 - $8,000 Build"
       }
     ]
   }
