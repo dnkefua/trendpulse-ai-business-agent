@@ -19,6 +19,14 @@ export default function BlueprintModal({ opportunity, onClose }) {
   const [adCac, setAdCac] = useState(bp.targetAdCAC || 8.50);
   const [monthlyVolume, setMonthlyVolume] = useState(500); // 500 orders or subscribers per month
 
+  // Overhead Cost State
+  const [customCosts, setCustomCosts] = useState([
+    { id: '1', name: 'Software Licenses', amount: 49 },
+    { id: '2', name: 'Server / API Fees', amount: 99 }
+  ]);
+  const [newCostName, setNewCostName] = useState('');
+  const [newCostAmount, setNewCostAmount] = useState('');
+
   // Checklist State
   const [completedDays, setCompletedDays] = useState({});
 
@@ -26,15 +34,35 @@ export default function BlueprintModal({ opportunity, onClose }) {
   const grossProfitPerUnit = Math.max(0, sellingPrice - unitCost);
   const netProfitPerUnit = Math.max(0, sellingPrice - unitCost - adCac);
   const monthlyRevenue = sellingPrice * monthlyVolume;
-  const monthlyExpenses = (unitCost + adCac) * monthlyVolume;
-  const monthlyNetProfit = Math.max(0, netProfitPerUnit * monthlyVolume);
-  const marginPercent = sellingPrice > 0 ? Math.round((netProfitPerUnit / sellingPrice) * 100) : 0;
+  
+  // Total fixed custom costs
+  const totalCustomCosts = customCosts.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
+  
+  const monthlyExpenses = ((unitCost + adCac) * monthlyVolume) + totalCustomCosts;
+  const monthlyNetProfit = Math.max(0, (netProfitPerUnit * monthlyVolume) - totalCustomCosts);
+  const marginPercent = monthlyRevenue > 0 ? Math.round((monthlyNetProfit / monthlyRevenue) * 100) : 0;
 
   const chartData = [
     { name: 'Monthly Revenue', amount: Math.round(monthlyRevenue) },
     { name: 'Ad & COGS Expenses', amount: Math.round(monthlyExpenses) },
     { name: 'Net Profit', amount: Math.round(monthlyNetProfit) }
   ];
+
+  const handleAddCost = () => {
+    if (!newCostName.trim() || isNaN(parseFloat(newCostAmount))) return;
+    const newCost = {
+      id: Date.now().toString(),
+      name: newCostName.trim(),
+      amount: parseFloat(newCostAmount)
+    };
+    setCustomCosts([...customCosts, newCost]);
+    setNewCostName('');
+    setNewCostAmount('');
+  };
+
+  const handleDeleteCost = (id) => {
+    setCustomCosts(customCosts.filter(c => c.id !== id));
+  };
 
   const handleCopyScript = (text, index) => {
     navigator.clipboard.writeText(text);
@@ -422,9 +450,7 @@ ${(bp.actionRoadmap || []).map(r => `- [ ] ${r.day}: ${r.task}`).join('\n')}
                       style={{ width: '100%', accentColor: '#10b981', cursor: 'pointer' }}
                     />
                   </div>
-                </div>
-
-                {/* Live Output KPI Cards */}
+                         {/* Live Output KPI Cards */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid #10b981' }}>
                     <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: '700' }}>
@@ -434,7 +460,7 @@ ${(bp.actionRoadmap || []).map(r => `- [ ] ${r.day}: ${r.task}`).join('\n')}
                       ${Math.round(monthlyNetProfit).toLocaleString()} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>/ mo</span>
                     </h2>
                     <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                      Net Margin per sale: <strong>${netProfitPerUnit.toFixed(2)} ({marginPercent}%)</strong>
+                      Net Margin: <strong>{marginPercent}%</strong> | Overhead: <strong>${totalCustomCosts}/mo</strong>
                     </p>
                   </div>
 
@@ -452,11 +478,90 @@ ${(bp.actionRoadmap || []).map(r => `- [ ] ${r.day}: ${r.task}`).join('\n')}
                       Gross Revenue vs Expenses
                     </span>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px', fontSize: '0.9rem' }}>
-                      <span>Monthly Revenue: <strong style={{ color: '#fff' }}>${Math.round(monthlyRevenue).toLocaleString()}</strong></span>
+                      <span>Revenue: <strong style={{ color: '#fff' }}>${Math.round(monthlyRevenue).toLocaleString()}</strong></span>
                       <span>Total Costs: <strong style={{ color: 'var(--tiktok-pink)' }}>${Math.round(monthlyExpenses).toLocaleString()}</strong></span>
                     </div>
                   </div>
-                </div>
+
+                  {/* Fixed Monthly Expenses Overhead Editor */}
+                  <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid var(--accent-purple)' }}>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: '700', display: 'block', marginBottom: '12px' }}>
+                      Fixed Monthly Expenses (Overhead)
+                    </span>
+                    
+                    {/* Cost Lines List */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px', maxHeight: '100px', overflowY: 'auto' }}>
+                      {customCosts.map(cost => (
+                        <div key={cost.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.02)', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                          <span style={{ fontSize: '0.82rem', color: '#fff' }}>{cost.name}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontSize: '0.82rem', color: 'var(--tiktok-pink)', fontWeight: '700' }}>${cost.amount}</span>
+                            <button 
+                              onClick={() => handleDeleteCost(cost.id)}
+                              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.75rem' }}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      {customCosts.length === 0 && (
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>No overhead expenses added.</span>
+                      )}
+                    </div>
+
+                    {/* Add Cost Form */}
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input 
+                        type="text" 
+                        placeholder="Cost Name (e.g. Server API)"
+                        value={newCostName}
+                        onChange={(e) => setNewCostName(e.target.value)}
+                        style={{
+                          flex: 1,
+                          padding: '6px 10px',
+                          backgroundColor: 'rgba(9, 13, 22, 0.8)',
+                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                          borderRadius: '6px',
+                          color: '#fff',
+                          fontSize: '0.8rem',
+                          outline: 'none'
+                        }}
+                      />
+                      <input 
+                        type="number" 
+                        placeholder="$"
+                        value={newCostAmount}
+                        onChange={(e) => setNewCostAmount(e.target.value)}
+                        style={{
+                          width: '60px',
+                          padding: '6px 10px',
+                          backgroundColor: 'rgba(9, 13, 22, 0.8)',
+                          border: '1px solid rgba(255, 255, 255, 0.12)',
+                          borderRadius: '6px',
+                          color: '#fff',
+                          fontSize: '0.8rem',
+                          outline: 'none'
+                        }}
+                      />
+                      <button 
+                        onClick={handleAddCost}
+                        style={{
+                          backgroundColor: 'var(--tiktok-cyan)',
+                          border: 'none',
+                          color: '#090d16',
+                          fontWeight: '700',
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                          fontSize: '0.8rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </div>         </div>
 
               </div>
 

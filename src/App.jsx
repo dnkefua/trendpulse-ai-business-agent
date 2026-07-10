@@ -38,6 +38,11 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // New recommendation states
+  const [minBudget, setMinBudget] = useState(0);
+  const [urgencyFilter, setUrgencyFilter] = useState('All');
+  const [syncStatus, setSyncStatus] = useState('synced'); // 'syncing' | 'synced' | 'error'
+
   // Initial Load with Firebase Sync
   useEffect(() => {
     const initSync = async () => {
@@ -72,7 +77,7 @@ export default function App() {
 
     initSync();
     loadData();
-  }, [activePlatform, searchKeyword, selectedCategory, sortBy]);
+  }, [activePlatform, searchKeyword, selectedCategory, sortBy, minBudget, urgencyFilter]);
 
   // Real-time background ingestion for fresh live posts every 25 seconds
   useEffect(() => {
@@ -149,32 +154,61 @@ Desmond Nkefua`,
       platform: activePlatform,
       keyword: searchKeyword,
       category: selectedCategory,
-      sortBy
+      sortBy,
+      minBudget,
+      urgencyFilter
     });
     setOpportunities(data);
     setIsLoading(false);
   };
 
-  const handleToggleSave = (id) => {
+  const handleToggleSave = async (id) => {
     const updated = toggleSaveOpportunity(id);
     setSavedIds(updated);
     // Background Firebase Sync
-    syncSavedOpportunitiesToFirebase(updated);
+    setSyncStatus('syncing');
+    try {
+      await syncSavedOpportunitiesToFirebase(updated);
+      setSyncStatus('synced');
+    } catch {
+      setSyncStatus('error');
+    }
   };
 
   const handleRunLiveScrape = async (query) => {
     setIsLoading(true);
-    const newOpp = await performLiveScrape(query);
-    await loadData();
-    setSelectedBlueprintOpp(newOpp);
+    setSyncStatus('syncing');
+    try {
+      const newOpp = await performLiveScrape(query);
+      await loadData();
+      setSelectedBlueprintOpp(newOpp);
+      setSyncStatus('synced');
+    } catch {
+      setSyncStatus('error');
+    }
+    setIsLoading(false);
+  };
+
+  const handleRunFiveSiteScrape = async (urls) => {
+    setIsLoading(true);
+    setSyncStatus('syncing');
+    try {
+      await scrapeFiveWebsites(urls);
+      await loadData();
+      setSyncStatus('synced');
+    } catch {
+      setSyncStatus('error');
+    }
     setIsLoading(false);
   };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    setSyncStatus('syncing');
     // Simulate scraper request latency
     await new Promise(resolve => setTimeout(resolve, 1200));
     await loadData();
+    setSyncStatus('synced');
     setIsRefreshing(false);
   };
 
@@ -195,6 +229,7 @@ Desmond Nkefua`,
         totalOpportunitiesCount={opportunities.length}
         onRefresh={handleRefresh}
         isRefreshing={isRefreshing}
+        syncStatus={syncStatus}
       />
 
       <main className="container" style={{ flex: 1, paddingBottom: '60px' }}>
@@ -216,7 +251,10 @@ Desmond Nkefua`,
 
         {/* Custom 5-URL Bar OR Search Bar */}
         {activePlatform === 'custom_5_sites' ? (
-          <CustomUrlScraperBar onScrapeComplete={() => loadData()} />
+          <CustomUrlScraperBar 
+            onRunFiveSiteScrape={handleRunFiveSiteScrape} 
+            isScraping={isLoading} 
+          />
         ) : (
           <ScraperBar 
             searchQuery={searchKeyword}
@@ -228,6 +266,10 @@ Desmond Nkefua`,
             onRunScrape={handleRunLiveScrape}
             isScraping={isLoading}
             activePlatform={activePlatform}
+            minBudget={minBudget}
+            setMinBudget={setMinBudget}
+            urgencyFilter={urgencyFilter}
+            setUrgencyFilter={setUrgencyFilter}
           />
         )}
 

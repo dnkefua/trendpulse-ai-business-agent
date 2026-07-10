@@ -60,7 +60,9 @@ export const fetchOpportunities = async ({
   platform = 'tiktok', 
   keyword = '', 
   category = 'All Categories', 
-  sortBy = 'demand' 
+  sortBy = 'demand',
+  minBudget = 0,
+  urgencyFilter = 'All'
 } = {}) => {
   let customOpps = [];
   try {
@@ -108,6 +110,37 @@ export const fetchOpportunities = async ({
       (opp.requiredSkills && opp.requiredSkills.some(s => s.toLowerCase().includes(q))) ||
       (opp.postExcerpt && opp.postExcerpt.toLowerCase().includes(q))
     );
+  }
+
+  // Budget Filter (for LinkedIn / Upwork / Reddit / Facebook / Twitter / Custom)
+  if (minBudget && minBudget > 0) {
+    const parseBudget = (budgetString) => {
+      if (!budgetString) return 0;
+      const clean = budgetString.replace(/,/g, '');
+      const matches = clean.match(/\d+/g);
+      if (matches && matches.length > 0) {
+        return parseInt(matches[0]);
+      }
+      return 0;
+    };
+
+    filtered = filtered.filter(opp => {
+      if (platform === 'tiktok') return true;
+      const budgetVal = parseBudget(opp.budget || opp.estimatedRevenuePotential);
+      return budgetVal >= minBudget;
+    });
+  }
+
+  // Urgency Filter
+  if (urgencyFilter && urgencyFilter !== 'All') {
+    filtered = filtered.filter(opp => {
+      if (platform === 'tiktok') return true;
+      const urgencyStr = (opp.urgency || '').toLowerCase();
+      if (urgencyFilter === 'Urgent') {
+        return urgencyStr.includes('urgent') || urgencyStr.includes('immediate') || urgencyStr.includes('asap') || urgencyStr.includes('now');
+      }
+      return true;
+    });
   }
 
   // Category Filter

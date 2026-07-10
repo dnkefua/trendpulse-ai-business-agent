@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Bookmark, Settings, Flame, Activity, Zap, RefreshCw } from 'lucide-react';
+import { Sparkles, Bookmark, Settings, Flame, Activity, Zap, RefreshCw, Cloud, CloudOff } from 'lucide-react';
 
 export default function Navbar({ 
   savedCount, 
@@ -8,7 +8,8 @@ export default function Navbar({
   onOpenSettings,
   totalOpportunitiesCount,
   onRefresh,
-  isRefreshing
+  isRefreshing,
+  syncStatus
 }) {
   return (
     <header className="glass-panel" style={{ borderRadius: '0 0 16px 16px', borderTop: 'none', marginBottom: '28px' }}>
@@ -90,7 +91,7 @@ export default function Navbar({
               animation: 'pulseGlow 2s infinite'
             }}></span>
             <span style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--text-secondary)' }}>
-              Multi-Source AI Engine: <span style={{ color: '#10b981' }}>Active</span>
+              Engine: <span style={{ color: '#10b981' }}>Active</span>
             </span>
           </div>
 
@@ -98,7 +99,28 @@ export default function Navbar({
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
             <Flame size={14} color="#ff0050" />
-            <span>Found: <strong style={{ color: '#fff' }}>{totalOpportunitiesCount}</strong> opportunities</span>
+            <span>Found: <strong style={{ color: '#fff' }}>{totalOpportunitiesCount}</strong></span>
+          </div>
+
+          <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255,255,255,0.1)' }}></div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem' }}>
+            {syncStatus === 'syncing' ? (
+              <>
+                <Cloud size={14} color="var(--tiktok-cyan)" className="spin-slow" />
+                <span style={{ color: 'var(--tiktok-cyan)', fontWeight: '600' }}>Syncing...</span>
+              </>
+            ) : syncStatus === 'error' ? (
+              <>
+                <CloudOff size={14} color="#ef4444" />
+                <span style={{ color: '#ef4444', fontWeight: '600' }}>Offline Fallback</span>
+              </>
+            ) : (
+              <>
+                <Cloud size={14} color="#10b981" />
+                <span style={{ color: '#10b981', fontWeight: '600' }}>Cloud Synced</span>
+              </>
+            )}
           </div>
         </div>
 

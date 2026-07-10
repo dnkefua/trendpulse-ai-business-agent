@@ -19,7 +19,12 @@ export default function ScraperBar({
   sortBy, 
   setSortBy,
   onRunScrape,
-  isScraping 
+  isScraping,
+  activePlatform,
+  minBudget,
+  setMinBudget,
+  urgencyFilter,
+  setUrgencyFilter
 }) {
 
   const handleKeyDown = (e) => {
@@ -37,7 +42,7 @@ export default function ScraperBar({
           <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
           <input 
             type="text" 
-            placeholder="Search TikTok keywords, pain points, or user quotes (e.g. 'car cup holder', 'recipe app')..."
+            placeholder={activePlatform === 'tiktok' ? "Search TikTok keywords, pain points, or user quotes..." : "Search client roles, tech stacks, or requirements..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -81,12 +86,12 @@ export default function ScraperBar({
           {isScraping ? (
             <>
               <Loader2 size={18} className="spin-slow" />
-              <span>Mining TikTok Comments...</span>
+              <span>{activePlatform === 'tiktok' ? 'Mining TikTok Comments...' : 'Scanning Platform Feeds...'}</span>
             </>
           ) : (
             <>
               <Sparkles size={18} />
-              <span>Mine TikTok Opportunities</span>
+              <span>{activePlatform === 'tiktok' ? 'Mine TikTok Opportunities' : 'Scan Live Feeds'}</span>
             </>
           )}
         </button>
@@ -140,29 +145,82 @@ export default function ScraperBar({
         borderTop: '1px solid rgba(255, 255, 255, 0.06)',
         paddingTop: '16px'
       }}>
-        {/* Category Pills */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '10px',
-                fontSize: '0.82rem',
-                fontWeight: '600',
-                border: '1px solid',
-                borderColor: selectedCategory === cat ? 'var(--tiktok-cyan)' : 'rgba(255, 255, 255, 0.08)',
-                backgroundColor: selectedCategory === cat ? 'rgba(0, 242, 254, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                color: selectedCategory === cat ? 'var(--tiktok-cyan)' : 'var(--text-secondary)',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {/* Conditional Category Pills or B2B Budget/Urgency Filters */}
+        {activePlatform === 'tiktok' ? (
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  fontSize: '0.82rem',
+                  fontWeight: '600',
+                  border: '1px solid',
+                  borderColor: selectedCategory === cat ? 'var(--tiktok-cyan)' : 'rgba(255, 255, 255, 0.08)',
+                  backgroundColor: selectedCategory === cat ? 'rgba(0, 242, 254, 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                  color: selectedCategory === cat ? 'var(--tiktok-cyan)' : 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+            {/* Min Budget Slider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                Min Budget:
+              </span>
+              <input 
+                type="range"
+                min="0"
+                max="10000"
+                step="500"
+                value={minBudget || 0}
+                onChange={(e) => setMinBudget(parseInt(e.target.value))}
+                style={{
+                  width: '120px',
+                  accentColor: 'var(--tiktok-cyan)',
+                  cursor: 'pointer',
+                  height: '4px',
+                  borderRadius: '2px'
+                }}
+              />
+              <span style={{ fontSize: '0.82rem', color: 'var(--tiktok-cyan)', fontWeight: '700', minWidth: '55px' }}>
+                ${minBudget || 0}+
+              </span>
+            </div>
+
+            {/* Urgency Filter Dropdown */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                Urgency:
+              </span>
+              <select
+                value={urgencyFilter || 'All'}
+                onChange={(e) => setUrgencyFilter(e.target.value)}
+                style={{
+                  backgroundColor: 'rgba(9, 13, 22, 0.8)',
+                  color: 'var(--text-primary)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '8px',
+                  padding: '6px 12px',
+                  fontSize: '0.82rem',
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="All">All Leads</option>
+                <option value="Urgent">Urgent / ASAP Only</option>
+              </select>
+            </div>
+          </div>
+        )}
 
         {/* Sorting Dropdown */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

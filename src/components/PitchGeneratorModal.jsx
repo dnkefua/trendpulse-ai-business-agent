@@ -5,8 +5,65 @@ import { DESMOND_PROFILE } from '../data/linkedInOpportunities';
 export default function PitchGeneratorModal({ opportunity, onClose }) {
   if (!opportunity) return null;
 
-  const [pitchText, setPitchText] = useState(opportunity.customPitch || '');
+  const [pitchTone, setPitchTone] = useState('technical'); // 'technical' | 'direct' | 'consultative'
   const [copied, setCopied] = useState(false);
+
+  // Generate dynamic pitch based on the selected tone and opportunity details
+  const getPitchContent = (tone) => {
+    const clientFirstName = opportunity.clientName ? opportunity.clientName.split(' ')[0] : 'Hiring Manager';
+    const title = opportunity.title || 'your project';
+    const skills = opportunity.requiredSkills || ['Python', 'Data Analytics', 'SQL'];
+    const skillsText = skills.slice(0, 3).join(', ');
+
+    if (tone === 'direct') {
+      return `Hi ${clientFirstName},
+
+I saw your request for a ${title}.
+
+As a Senior Data Analyst & Custom Software Engineer (https://www.linkedin.com/in/desmond-nkefua-data-analyst/), I specialize in ${skillsText} and can build this automated solution in 3-5 days.
+
+Let's do a 5-minute call today to review your exact details.
+
+Best,
+Desmond Nkefua`;
+    }
+
+    if (tone === 'consultative') {
+      return `Hi ${clientFirstName},
+
+Hope you are doing well. I noticed your post seeking help with ${title}.
+
+With a strong background as a Data Analyst & Custom Software Developer (https://www.linkedin.com/in/desmond-nkefua-data-analyst/), I have solved similar challenges in data pipelines, analytics, and business automation using ${skillsText}.
+
+I'd love to learn more about your data structure and see how we can design a reliable, scalable system for you. 
+
+When are you free for a quick chat this week?
+
+Warm regards,
+Desmond Nkefua`;
+    }
+
+    // Default: 'technical'
+    return opportunity.customPitch || `Hi ${clientFirstName},
+
+I saw your hiring post regarding ${title.toLowerCase()}.
+
+As a Senior Data Analyst & Custom Software Engineer (https://www.linkedin.com/in/desmond-nkefua-data-analyst/), I specialize in ${skillsText} and have extensive experience building database modeling pipelines, web scrapers, and analytics dashboards.
+
+I can deliver your complete solution with high quality, automated error handling, and clean code documentation.
+
+Are you available for a brief 5-minute technical scope review call today?
+
+Best regards,
+Desmond Nkefua`;
+  };
+
+  const [pitchText, setPitchText] = useState(getPitchContent('technical'));
+
+  const handleToneChange = (tone) => {
+    setPitchTone(tone);
+    setPitchText(getPitchContent(tone));
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(pitchText);
@@ -150,6 +207,39 @@ export default function PitchGeneratorModal({ opportunity, onClose }) {
                 <Sparkles size={16} /> Tailored Pitch Message (Includes Desmond's LinkedIn Profile):
               </label>
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Edit text as needed</span>
+            </div>
+
+            {/* Tone Selector Tabs */}
+            <div style={{
+              display: 'flex',
+              gap: '6px',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              padding: '4px',
+              borderRadius: '8px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              marginBottom: '14px'
+            }}>
+              {['technical', 'direct', 'consultative'].map((t) => (
+                <button
+                  key={t}
+                  onClick={() => handleToneChange(t)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    fontSize: '0.8rem',
+                    fontWeight: '700',
+                    textTransform: 'capitalize',
+                    cursor: 'pointer',
+                    backgroundColor: pitchTone === t ? 'rgba(0, 242, 254, 0.15)' : 'transparent',
+                    color: pitchTone === t ? 'var(--tiktok-cyan)' : 'var(--text-secondary)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {t === 'technical' ? '💻 Highly Technical' : t === 'direct' ? '⚡ Brief & Direct' : '🤝 Consultative'}
+                </button>
+              ))}
             </div>
 
             <textarea 
