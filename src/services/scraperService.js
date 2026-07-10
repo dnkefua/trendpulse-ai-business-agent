@@ -4,6 +4,10 @@ import { FACEBOOK_OPPORTUNITIES } from '../data/facebookOpportunities';
 import { TWITTER_OPPORTUNITIES } from '../data/twitterOpportunities';
 import { UPWORK_OPPORTUNITIES } from '../data/upworkOpportunities';
 import { REDDIT_OPPORTUNITIES } from '../data/redditOpportunities';
+import { 
+  syncCustomOpportunitiesToFirebase, 
+  fetchCustomOpportunitiesFromFirebase 
+} from './firebase';
 
 const STORAGE_KEY_SAVED = 'trendpulse_saved_opps';
 const STORAGE_KEY_CUSTOM = 'trendpulse_custom_opps';
@@ -214,6 +218,9 @@ Desmond Nkefua`,
 
   const updatedCustom = [...scrapedResults, ...existingCustom];
   localStorage.setItem(STORAGE_KEY_CUSTOM, JSON.stringify(updatedCustom));
+  
+  // Sync to Firebase in background
+  syncCustomOpportunitiesToFirebase(updatedCustom);
 
   return scrapedResults;
 };
@@ -279,6 +286,23 @@ export const performLiveScrape = async (searchQuery) => {
 
   const updatedCustom = [newOpportunity, ...existingCustom];
   localStorage.setItem(STORAGE_KEY_CUSTOM, JSON.stringify(updatedCustom));
+  
+  // Sync to Firebase in background
+  syncCustomOpportunitiesToFirebase(updatedCustom);
 
   return newOpportunity;
+};
+
+// Startup helper to pull and update custom scraped opportunities from Firebase
+export const syncCustomLeadsOnStartup = async () => {
+  try {
+    const fbCustom = await fetchCustomOpportunitiesFromFirebase();
+    if (fbCustom && fbCustom.length > 0) {
+      localStorage.setItem(STORAGE_KEY_CUSTOM, JSON.stringify(fbCustom));
+      return fbCustom;
+    }
+  } catch (e) {
+    console.warn('Error loading custom leads from Firebase on startup:', e);
+  }
+  return null;
 };

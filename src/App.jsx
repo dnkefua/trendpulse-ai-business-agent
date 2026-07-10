@@ -14,8 +14,13 @@ import {
   fetchOpportunities, 
   getSavedOpportunityIds, 
   toggleSaveOpportunity,
-  performLiveScrape 
+  performLiveScrape,
+  syncCustomLeadsOnStartup
 } from './services/scraperService';
+import {
+  syncSavedOpportunitiesToFirebase,
+  fetchSavedOpportunitiesFromFirebase
+} from './services/firebase';
 
 export default function App() {
   const [activePlatform, setActivePlatform] = useState('tiktok'); // 'tiktok' | 'linkedin' | 'upwork' | 'reddit' | 'facebook' | 'twitter' | 'custom_5_sites'
@@ -33,9 +38,39 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Initial Load
+  // Initial Load with Firebase Sync
   useEffect(() => {
-    setSavedIds(getSavedOpportunityIds());
+    const initSync = async () => {
+      // 1. Instant load from local storage
+      const localSaved = getSavedOpportunityIds();
+      setSavedIds(localSaved);
+
+      // 2. Fetch and sync saved opportunities from Firebase in background
+      try {
+        const fbSaved = await fetchSavedOpportunitiesFromFirebase();
+        if (fbSaved && fbSaved.length > 0) {
+          const merged = Array.from(new Set([...localSaved, ...fbSaved]));
+          setSavedIds(merged);
+          localStorage.setItem('trendpulse_saved_opps', JSON.stringify(merged));
+        }
+      } catch (err) {
+        console.warn('Firebase saved list sync failed:', err);
+      }
+
+      // 3. Fetch custom scraped opportunities from Firebase in background
+      try {
+        const fbCustom = await syncCustomLeadsOnStartup();
+        if (fbCustom) {
+          if (activePlatform === 'custom_5_sites') {
+            loadData();
+          }
+        }
+      } catch (err) {
+        console.warn('Firebase custom leads sync failed:', err);
+      }
+    };
+
+    initSync();
     loadData();
   }, [activePlatform, searchKeyword, selectedCategory, sortBy]);
 
@@ -123,6 +158,8 @@ Desmond Nkefua`,
   const handleToggleSave = (id) => {
     const updated = toggleSaveOpportunity(id);
     setSavedIds(updated);
+    // Background Firebase Sync
+    syncSavedOpportunitiesToFirebase(updated);
   };
 
   const handleRunLiveScrape = async (query) => {
