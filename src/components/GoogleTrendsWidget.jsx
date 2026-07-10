@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GOOGLE_TRENDS_DATA } from '../data/googleTrendsData';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Sparkles, Cpu, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, Sparkles, Cpu, ArrowUpRight, Check } from 'lucide-react';
 
 export default function GoogleTrendsWidget({ onOpenPitchModal }) {
   const [selectedTrend, setSelectedTrend] = useState(GOOGLE_TRENDS_DATA[0]);
@@ -196,7 +196,7 @@ Desmond Nkefua`
               >
                 <div style={{ flex: 1, minWidth: '220px' }}>
                   <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <CheckCircle2 size={15} color="var(--tiktok-cyan)" />
+                    <Check size={15} color="var(--tiktok-cyan)" />
                     {idea.title}
                   </h4>
                   <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
