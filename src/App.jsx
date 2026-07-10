@@ -31,6 +31,7 @@ export default function App() {
   const [selectedBlueprintOpp, setSelectedBlueprintOpp] = useState(null);
   const [selectedPitchOpp, setSelectedPitchOpp] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Initial Load
   useEffect(() => {
@@ -132,6 +133,14 @@ Desmond Nkefua`,
     setIsLoading(false);
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    // Simulate scraper request latency
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    await loadData();
+    setIsRefreshing(false);
+  };
+
   // Filter saved
   const displayedOpportunities = showSavedOnly
     ? opportunities.filter(opp => savedIds.includes(opp.id))
@@ -147,6 +156,8 @@ Desmond Nkefua`,
         setShowSavedOnly={setShowSavedOnly}
         onOpenSettings={() => setIsSettingsOpen(true)}
         totalOpportunitiesCount={opportunities.length}
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
       />
 
       <main className="container" style={{ flex: 1, paddingBottom: '60px' }}>
@@ -171,14 +182,14 @@ Desmond Nkefua`,
           <CustomUrlScraperBar onScrapeComplete={() => loadData()} />
         ) : (
           <ScraperBar 
-            searchKeyword={searchKeyword}
-            setSearchKeyword={setSearchKeyword}
+            searchQuery={searchKeyword}
+            setSearchQuery={setSearchKeyword}
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
             sortBy={sortBy}
             setSortBy={setSortBy}
             onRunScrape={handleRunLiveScrape}
-            isLoading={isLoading}
+            isScraping={isLoading}
             activePlatform={activePlatform}
           />
         )}

@@ -39,6 +39,18 @@ export const saveApiSettings = (settings) => {
   localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
 };
 
+// Helper to dynamically set post timestamps relative to the exact fetching moment
+const updateTimestamps = (list) => {
+  return list.map((opp, index) => {
+    // Generate a progressive offset (e.g. index * 45 minutes + random jitter)
+    const offsetMs = (index * 45 * 60 * 1000) + (Math.floor(Math.random() * 15) * 60 * 1000) + 120000;
+    return {
+      ...opp,
+      timestamp: new Date(Date.now() - offsetMs).toISOString()
+    };
+  });
+};
+
 // Fetch data by platform source ('tiktok' | 'linkedin' | 'upwork' | 'facebook' | 'twitter' | 'reddit' | 'custom_5_sites')
 export const fetchOpportunities = async ({ 
   platform = 'tiktok', 
@@ -49,27 +61,32 @@ export const fetchOpportunities = async ({
   let customOpps = [];
   try {
     const stored = localStorage.getItem(STORAGE_KEY_CUSTOM);
-    if (stored) customOpps = JSON.parse(stored);
+    if (stored) {
+      customOpps = JSON.parse(stored).map((opp, idx) => ({
+        ...opp,
+        timestamp: new Date(Date.now() - (idx * 15 * 60 * 1000) - 180000).toISOString()
+      }));
+    }
   } catch (e) {
     console.error(e);
   }
 
   let baseList = [];
   if (platform === 'linkedin') {
-    baseList = LINKEDIN_IT_OPPORTUNITIES;
+    baseList = updateTimestamps(LINKEDIN_IT_OPPORTUNITIES);
   } else if (platform === 'upwork') {
-    baseList = UPWORK_OPPORTUNITIES;
+    baseList = updateTimestamps(UPWORK_OPPORTUNITIES);
   } else if (platform === 'facebook') {
-    baseList = FACEBOOK_OPPORTUNITIES;
+    baseList = updateTimestamps(FACEBOOK_OPPORTUNITIES);
   } else if (platform === 'twitter') {
-    baseList = TWITTER_OPPORTUNITIES;
+    baseList = updateTimestamps(TWITTER_OPPORTUNITIES);
   } else if (platform === 'reddit') {
-    baseList = REDDIT_OPPORTUNITIES;
+    baseList = updateTimestamps(REDDIT_OPPORTUNITIES);
   } else if (platform === 'custom_5_sites') {
     baseList = customOpps.filter(o => o.isCustom5Site);
   } else {
     // TikTok & General
-    baseList = [...customOpps.filter(o => !o.isCustom5Site), ...INITIAL_OPPORTUNITIES];
+    baseList = [...customOpps.filter(o => !o.isCustom5Site), ...updateTimestamps(INITIAL_OPPORTUNITIES)];
   }
 
   let filtered = [...baseList];

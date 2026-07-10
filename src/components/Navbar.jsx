@@ -1,16 +1,18 @@
 import React from 'react';
-import { Sparkles, Bookmark, Settings, Flame, Activity, Zap } from 'lucide-react';
+import { Sparkles, Bookmark, Settings, Flame, Activity, Zap, RefreshCw } from 'lucide-react';
 
 export default function Navbar({ 
   savedCount, 
   showSavedOnly, 
   setShowSavedOnly, 
   onOpenSettings,
-  totalOpportunitiesCount 
+  totalOpportunitiesCount,
+  onRefresh,
+  isRefreshing
 }) {
   return (
     <header className="glass-panel" style={{ borderRadius: '0 0 16px 16px', borderTop: 'none', marginBottom: '28px' }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 24px', flexWrap: 'wrap', gap: '14px' }}>
+      <div className="container" style={{ display: 'flex', alignItems: 'center', justifycontent: 'space-between', padding: '14px 24px', flexWrap: 'wrap', gap: '14px' }}>
         
         {/* Logo & Brand with 3D Effect */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -102,6 +104,37 @@ export default function Navbar({
 
         {/* Action Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button 
+            className="btn-primary" 
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            style={{
+              padding: '10px 18px',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: 'rgba(0, 242, 254, 0.12)',
+              border: '1px solid var(--tiktok-cyan)',
+              color: 'var(--tiktok-cyan)',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              fontWeight: '700'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(0, 242, 254, 0.2)';
+              e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 242, 254, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(0, 242, 254, 0.12)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <RefreshCw size={15} className={isRefreshing ? 'spin-slow' : ''} />
+            <span>{isRefreshing ? 'Refreshing...' : 'Refresh Feed'}</span>
+          </button>
+
           <button 
             className={`btn-secondary ${showSavedOnly ? 'active-saved' : ''}`}
             onClick={() => setShowSavedOnly(!showSavedOnly)}
