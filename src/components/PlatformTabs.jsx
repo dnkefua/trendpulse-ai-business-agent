@@ -1,5 +1,5 @@
 import React from 'react';
-import { Video, Linkedin, Facebook, Twitter, Briefcase, Globe, Sparkles, UserCheck, MessageSquareCode } from 'lucide-react';
+import { Video, Linkedin, Facebook, Twitter, Briefcase, Globe, Sparkles, UserCheck, MessageSquareCode, TrendingUp } from 'lucide-react';
 import { DESMOND_PROFILE } from '../data/linkedInOpportunities';
 
 export default function PlatformTabs({ activePlatform, setActivePlatform }) {
@@ -155,7 +155,30 @@ export default function PlatformTabs({ activePlatform, setActivePlatform }) {
           <span>Twitter / X</span>
         </button>
 
-        {/* TAB 7: 5-WEBSITE CUSTOM SCRAPER */}
+        {/* TAB 7: GOOGLE TRENDS */}
+        <button 
+          onClick={() => setActivePlatform('google_trends')}
+          style={{
+            padding: '12px 14px',
+            borderRadius: '12px',
+            border: '1px solid',
+            borderColor: activePlatform === 'google_trends' ? '#4285f4' : 'transparent',
+            backgroundColor: activePlatform === 'google_trends' ? 'rgba(66, 133, 244, 0.15)' : 'transparent',
+            color: activePlatform === 'google_trends' ? '#fff' : 'var(--text-secondary)',
+            fontWeight: '700',
+            fontSize: '0.8rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'all 0.2s'
+          }}
+        >
+          <TrendingUp size={15} color={activePlatform === 'google_trends' ? '#4285f4' : 'var(--text-secondary)'} />
+          <span>Google Trends</span>
+        </button>
+
+        {/* TAB 8: 5-WEBSITE CUSTOM SCRAPER */}
         <button 
           onClick={() => setActivePlatform('custom_5_sites')}
           style={{

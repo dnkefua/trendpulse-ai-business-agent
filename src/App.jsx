@@ -9,6 +9,7 @@ import BlueprintModal from './components/BlueprintModal';
 import SettingsModal from './components/SettingsModal';
 import PitchGeneratorModal from './components/PitchGeneratorModal';
 import LiveFeedTicker from './components/LiveFeedTicker';
+import GoogleTrendsWidget from './components/GoogleTrendsWidget';
 
 import { 
   fetchOpportunities, 
@@ -249,12 +250,14 @@ Desmond Nkefua`,
           setActivePlatform={setActivePlatform}
         />
 
-        {/* Custom 5-URL Bar OR Search Bar */}
+        {/* Custom 5-URL Bar OR Google Trends OR Search Bar */}
         {activePlatform === 'custom_5_sites' ? (
           <CustomUrlScraperBar 
             onRunFiveSiteScrape={handleRunFiveSiteScrape} 
             isScraping={isLoading} 
           />
+        ) : activePlatform === 'google_trends' ? (
+          <GoogleTrendsWidget onOpenPitchModal={(opp) => setSelectedPitchOpp(opp)} />
         ) : (
           <ScraperBar 
             searchQuery={searchKeyword}
@@ -274,7 +277,7 @@ Desmond Nkefua`,
         )}
 
         {/* Loading Spinner */}
-        {isLoading ? (
+        {activePlatform !== 'google_trends' && isLoading && (
           <div className="glass-panel" style={{ padding: '60px', textAlign: 'center', margin: '40px 0' }}>
             <div style={{ 
               width: '40px', 
@@ -292,8 +295,10 @@ Desmond Nkefua`,
               Parsing live posts, client requests, and verifying timestamp age metrics.
             </p>
           </div>
-        ) : (
-          /* Opportunities Grid */
+        )}
+
+        {/* Opportunities Grid */}
+        {activePlatform !== 'google_trends' && !isLoading && (
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
@@ -314,7 +319,7 @@ Desmond Nkefua`,
         )}
 
         {/* Empty State */}
-        {!isLoading && displayedOpportunities.length === 0 && (
+        {activePlatform !== 'google_trends' && !isLoading && displayedOpportunities.length === 0 && (
           <div className="glass-panel" style={{ padding: '60px', textAlign: 'center', margin: '40px 0' }}>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
               No opportunities found matching your criteria.

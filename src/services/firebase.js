@@ -2,13 +2,12 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
-  projectId: "trendpulse-ai-8fc15",
-  appId: "1:28815536054:web:b98bc2a530ff34d13e1b17",
-  storageBucket: "trendpulse-ai-8fc15.firebasestorage.app",
-  apiKey: "AIzaSyCzVpxzKnqvmBAN9M4PwskadB6BQQykkxM",
-  authDomain: "trendpulse-ai-8fc15.firebaseapp.com",
-  messagingSenderId: "28815536054",
-  measurementId: "G-CN4TNS9209"
+  projectId: "trendpulse-ai-502019",
+  appId: "1:58138304006:web:512a0b5fe03ccda0d46d87",
+  storageBucket: "trendpulse-ai-502019.firebasestorage.app",
+  apiKey: "AIzaSyBwChX_Sweme1y-uuJnAAVNT1qIV1OG9JI",
+  authDomain: "trendpulse-ai-502019.firebaseapp.com",
+  messagingSenderId: "58138304006"
 };
 
 // Initialize Firebase
