@@ -3,7 +3,11 @@
 // an empty/blank result so the caller can fall back to seeded example data and
 // the UI never breaks.
 
-const BASE = '/api';
+// In local dev, VITE_API_BASE is unset -> '' -> calls hit '/api' and Vite proxies
+// them to the local server. In production builds it's set (see .env.production) to
+// the deployed Cloud Run URL, so the hosted frontend calls the live API directly.
+const API_ROOT = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
+const BASE = `${API_ROOT}/api`;
 
 // Short timeout so a missing backend doesn't hang the UI.
 async function getJson(path, { timeoutMs = 12000 } = {}) {

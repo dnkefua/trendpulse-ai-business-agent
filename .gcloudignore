@@ -1,0 +1,21 @@
+# Files NOT uploaded to Cloud Build when running `gcloud run deploy --source`.
+# The Dockerfile only needs server/ + server/package.json, so exclude the rest.
+.git
+.gitignore
+node_modules
+dist
+dist-ssr
+src
+public
+.firebase
+.claude
+.vscode
+.idea
+*.log
+server/.env
+.env
+README*.md
+firebase.json
+.firebaserc
+vite.config.js
+index.html
