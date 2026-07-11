@@ -11,11 +11,12 @@ import PitchGeneratorModal from './components/PitchGeneratorModal';
 import LiveFeedTicker from './components/LiveFeedTicker';
 import GoogleTrendsWidget from './components/GoogleTrendsWidget';
 
-import { 
-  fetchOpportunities, 
-  getSavedOpportunityIds, 
+import {
+  fetchOpportunities,
+  getSavedOpportunityIds,
   toggleSaveOpportunity,
   performLiveScrape,
+  scrapeFiveWebsites,
   syncCustomLeadsOnStartup
 } from './services/scraperService';
 import {
