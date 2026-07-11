@@ -13,8 +13,9 @@ export default function OpportunityCard({
   const isUpwork = opportunity.platform === 'Upwork & Freelance';
   const isTwitter = opportunity.platform === 'Twitter / X';
   const isFacebook = opportunity.platform === 'Facebook';
-  const isLinkedIn = opportunity.platform === 'LinkedIn' || (opportunity.customPitch && !isTwitter && !isFacebook && !isUpwork && !isReddit);
-  const isB2B = isLinkedIn || isFacebook || isTwitter || isUpwork || isReddit || opportunity.customPitch;
+  const isHackerNews = opportunity.platform === 'Hacker News';
+  const isLinkedIn = opportunity.platform === 'LinkedIn' || (opportunity.customPitch && !isTwitter && !isFacebook && !isUpwork && !isReddit && !isHackerNews);
+  const isB2B = isLinkedIn || isFacebook || isTwitter || isUpwork || isReddit || isHackerNews || opportunity.customPitch;
 
   const [copiedQuote, setCopiedQuote] = useState(false);
 
@@ -44,6 +45,9 @@ export default function OpportunityCard({
   };
 
   const getPrimarySearchUrl = () => {
+    // Real leads carry the actual permalink — always prefer it so the button
+    // opens the genuine post rather than a generic search.
+    if (opportunity.postUrl) return opportunity.postUrl;
     if (isReddit) return opportunity.redditPostUrl || `https://www.reddit.com/r/forhire/search/?q=${encodeURIComponent(opportunity.title)}`;
     if (isUpwork) return `https://www.upwork.com/nx/search/jobs/?q=${encodeURIComponent(opportunity.title)}`;
     if (isTwitter) return `https://x.com/search?q=${encodeURIComponent(opportunity.title)}`;
@@ -52,6 +56,9 @@ export default function OpportunityCard({
   };
 
   const getCategoryBadge = () => {
+    if (isHackerNews) {
+      return <span className="badge" style={{ background: 'rgba(255,102,0,0.15)', color: '#ff6600', border: '1px solid rgba(255,102,0,0.35)' }}>🟠 {opportunity.sourceTag || 'Hacker News'}</span>;
+    }
     if (isReddit) {
       return <span className="badge" style={{ background: 'rgba(255,69,0,0.15)', color: '#ff4500', border: '1px solid rgba(255,69,0,0.3)' }}>🔴 Reddit {opportunity.subreddit || 'r/forhire'}</span>;
     }
@@ -151,7 +158,7 @@ export default function OpportunityCard({
           </div>
 
           <span style={{ fontSize: '0.68rem', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <ShieldCheck size={12} color="#10b981" /> Verified Live Match
+            <ShieldCheck size={12} color="#10b981" /> {opportunity.isReal ? 'LIVE · Real listing' : 'Verified Live Match'}
           </span>
         </div>
 

@@ -11,11 +11,12 @@ import PitchGeneratorModal from './components/PitchGeneratorModal';
 import LiveFeedTicker from './components/LiveFeedTicker';
 import GoogleTrendsWidget from './components/GoogleTrendsWidget';
 
-import { 
-  fetchOpportunities, 
-  getSavedOpportunityIds, 
+import {
+  fetchOpportunities,
+  getSavedOpportunityIds,
   toggleSaveOpportunity,
   performLiveScrape,
+  scrapeFiveWebsites,
   syncCustomLeadsOnStartup
 } from './services/scraperService';
 import {
@@ -80,74 +81,20 @@ export default function App() {
     loadData();
   }, [activePlatform, searchKeyword, selectedCategory, sortBy, minBudget, urgencyFilter]);
 
-  // Real-time background ingestion for fresh live posts every 25 seconds
+  // Periodically re-pull REAL leads from the backend for the live platforms so
+  // newly-posted opportunities surface without a manual refresh. No fabricated
+  // posts — this simply re-runs the same real query on an interval.
   useEffect(() => {
-    const liveStreamInterval = setInterval(() => {
-      const freshPostTitles = [
-        "Urgent: Python Web Scraper Specialist for E-Commerce Data",
-        "Power BI & SQL Executive Sales Dashboard Build",
-        "React + Python Micro-SaaS Customer Analytics Portal",
-        "Automated PDF Invoice OCR Data Extractor & SQL Pipeline",
-        "Tableau Healthcare Analytics & Patient Flow Dashboard",
-        "TikTok Viral Product Trend: High-Demand Solution"
-      ];
+    const isLivePlatform = activePlatform === 'upwork' || activePlatform === 'reddit';
+    if (!isLivePlatform) return undefined;
 
-      const randomTitle = freshPostTitles[Math.floor(Math.random() * freshPostTitles.length)];
-      
-      const freshOpp = {
-        id: `fresh-ingest-${Date.now()}`,
-        platform: activePlatform === 'tiktok' ? 'TikTok' : activePlatform === 'linkedin' ? 'LinkedIn' : activePlatform === 'upwork' ? 'Upwork' : activePlatform === 'reddit' ? 'Reddit' : activePlatform === 'facebook' ? 'Facebook' : 'Twitter / X',
-        title: `🔴 [JUST INGESTED]: ${randomTitle}`,
-        category: "Service / Local Agency",
-        niche: "Real-Time Fresh Live Ingest",
-        demandScore: 99,
-        trendGrowth: "⚡ Just Posted",
-        views: "Live Stream",
-        commentsAnalyzed: 120,
-        sentimentPositive: 98,
-        difficulty: "Low",
-        competition: "Very Low",
-        estimatedRevenuePotential: "$3,500 - $6,500 Contract",
-        clientName: "Live Verified Client",
-        clientTitle: "Hiring Manager",
-        clientLocation: "Remote (Global)",
-        urgency: "⚡ JUST POSTED",
-        postedAgo: "Just now",
-        timestamp: new Date().toISOString(),
-        isVerifiedPost: true,
-        matchScore: 99,
-        requiredSkills: ["Data Analytics", "Python", "Web Scraping", "SQL"],
-        postExcerpt: `Fresh Real-Time Ingest (${new Date().toLocaleTimeString()}): Client is actively seeking a Data Analyst & Custom Software Specialist (Desmond Nkefua match) for immediate contract work.`,
-        customPitch: `Hi Hiring Manager,
+    const refreshInterval = setInterval(() => {
+      loadData();
+    }, 90000);
 
-I saw your fresh request posted just now.
-
-As a Senior Data Analyst & Custom Software Engineer (https://www.linkedin.com/in/desmond-nkefua-data-analyst/), I am available to start immediately on your contract.
-
-Let's jump on a 5-minute call right now to review your requirements!
-
-Best,
-Desmond Nkefua`,
-        blueprint: {
-          businessModel: "Immediate Contract Service ($3,500 - $6,500)",
-          sourcingStrategy: ["Real-Time Python API Pipeline", "Automated SQL Delivery"],
-          unitCost: 0.00,
-          targetSellingPrice: 4500.00,
-          projectedConversionRate: 40.0,
-          targetAdCAC: 0.00,
-          grossMargin: "100%",
-          actionRoadmap: [
-            { day: "Day 1", task: "Accept live proposal & scope project." },
-            { day: "Day 2", task: "Deliver complete solution & collect milestone payment." }
-          ]
-        }
-      };
-
-      setOpportunities(prev => [freshOpp, ...prev]);
-    }, 25000);
-
-    return () => clearInterval(liveStreamInterval);
-  }, [activePlatform]);
+    return () => clearInterval(refreshInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePlatform, searchKeyword, selectedCategory, sortBy, minBudget, urgencyFilter]);
 
   const loadData = async () => {
     setIsLoading(true);

@@ -16,7 +16,11 @@ export default function LiveFeedTicker({ opportunities = [], onSelectOpportunity
 
   if (!opportunities || opportunities.length === 0) return null;
 
-  const currentOpp = opportunities[currentIndex];
+  // Clamp with modulo: when the list shrinks (e.g. switching from 24 live leads
+  // to a smaller fallback set), a stale currentIndex could otherwise point past
+  // the end and crash on an undefined item.
+  const currentOpp = opportunities[currentIndex % opportunities.length];
+  if (!currentOpp) return null;
   const postAgeDisplay = getRelativePostAge(currentOpp.timestamp);
 
   return (
