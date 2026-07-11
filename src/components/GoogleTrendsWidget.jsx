@@ -1,20 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GOOGLE_TRENDS_DATA } from '../data/googleTrendsData';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Sparkles, Cpu, ArrowUpRight, Check, Search } from 'lucide-react';
+import { fetchLiveTrends } from '../services/liveApi';
 
 export default function GoogleTrendsWidget({ onOpenPitchModal }) {
   const [customTrends, setCustomTrends] = useState([]);
+  const [liveTrends, setLiveTrends] = useState([]);
+  const [isLive, setIsLive] = useState(false);
   const [selectedTrend, setSelectedTrend] = useState(GOOGLE_TRENDS_DATA[0]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Combine static and custom searched trends
-  const allTrends = [...customTrends, ...GOOGLE_TRENDS_DATA];
+  // On mount, try to pull REAL Google Trends interest data from the backend.
+  // If it's available (residential IP / deployed), it becomes the primary list;
+  // otherwise we keep the seeded sample data so the tab always renders.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, live } = await fetchLiveTrends();
+      if (cancelled || !live || !data.length) return;
+      setLiveTrends(data);
+      setIsLive(true);
+      setSelectedTrend(data[0]);
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
-  const handleSearch = () => {
+  // Combine custom, live, and static sample trends
+  const allTrends = [...customTrends, ...liveTrends, ...GOOGLE_TRENDS_DATA];
+
+  const handleSearch = async () => {
     if (!searchQuery.trim()) return;
     const term = searchQuery.toLowerCase().trim();
-    
+
     // Check if it already exists
     const found = allTrends.find(t => t.keyword.toLowerCase() === term);
     if (found) {
@@ -22,7 +40,15 @@ export default function GoogleTrendsWidget({ onOpenPitchModal }) {
       return;
     }
 
-    // Generate new custom trend on the fly
+    // Try REAL Google Trends for the typed keyword first.
+    const { data, live } = await fetchLiveTrends(searchQuery.trim());
+    if (live && data.length) {
+      setCustomTrends(prev => [data[0], ...prev]);
+      setSelectedTrend(data[0]);
+      return;
+    }
+
+    // Fallback: synthesize a sample trend so the UI stays responsive offline.
     const newTrend = {
       id: `gt-custom-${Date.now()}`,
       keyword: searchQuery,
@@ -154,6 +180,19 @@ Desmond Nkefua`
           <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
             Keywords experiencing massive search spikes over the last 12 months.
           </p>
+          <span style={{
+            display: 'inline-block',
+            marginTop: '8px',
+            fontSize: '0.68rem',
+            fontWeight: '700',
+            padding: '2px 8px',
+            borderRadius: '10px',
+            color: isLive ? '#10b981' : '#f59e0b',
+            background: isLive ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)',
+            border: `1px solid ${isLive ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}`
+          }}>
+            {isLive ? '🟢 LIVE Google Trends data' : '🟡 Sample data — start the lead API for live trends'}
+          </span>
         </div>
 
         {/* Dynamic Search Box */}

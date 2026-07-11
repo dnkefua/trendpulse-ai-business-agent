@@ -82,7 +82,8 @@ export default function PlatformTabs({ activePlatform, setActivePlatform }) {
           }}
         >
           <Briefcase size={15} color={activePlatform === 'upwork' ? '#14a800' : 'var(--text-secondary)'} />
-          <span>Upwork</span>
+          <span>HN Freelance</span>
+          <span className="badge" style={{ fontSize: '0.55rem', padding: '1px 4px', background: 'rgba(20,168,0,0.2)', color: '#14a800', border: '1px solid #14a800' }}>Live</span>
         </button>
 
         {/* TAB 4: REDDIT HIRING (SITE #6) */}

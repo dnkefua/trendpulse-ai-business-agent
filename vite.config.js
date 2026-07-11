@@ -6,6 +6,13 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    open: true
+    open: true,
+    proxy: {
+      // Forward live-lead API calls to the local Express backend (npm run server)
+      '/api': {
+        target: 'http://localhost:8787',
+        changeOrigin: true
+      }
+    }
   }
 })

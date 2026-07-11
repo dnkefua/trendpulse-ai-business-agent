@@ -4,10 +4,11 @@ import { FACEBOOK_OPPORTUNITIES } from '../data/facebookOpportunities';
 import { TWITTER_OPPORTUNITIES } from '../data/twitterOpportunities';
 import { UPWORK_OPPORTUNITIES } from '../data/upworkOpportunities';
 import { REDDIT_OPPORTUNITIES } from '../data/redditOpportunities';
-import { 
-  syncCustomOpportunitiesToFirebase, 
-  fetchCustomOpportunitiesFromFirebase 
+import {
+  syncCustomOpportunitiesToFirebase,
+  fetchCustomOpportunitiesFromFirebase
 } from './firebase';
+import { fetchLiveLeads } from './liveApi';
 
 const STORAGE_KEY_SAVED = 'trendpulse_saved_opps';
 const STORAGE_KEY_CUSTOM = 'trendpulse_custom_opps';
@@ -81,13 +82,19 @@ export const fetchOpportunities = async ({
   if (platform === 'linkedin') {
     baseList = updateTimestamps(LINKEDIN_IT_OPPORTUNITIES);
   } else if (platform === 'upwork') {
-    baseList = updateTimestamps(UPWORK_OPPORTUNITIES);
+    // Real, live freelance/hiring leads from Hacker News (no API key required).
+    // Falls back to the seeded examples if the backend is offline or dry.
+    const live = await fetchLiveLeads('hackernews', keyword);
+    baseList = live.leads.length ? live.leads : updateTimestamps(UPWORK_OPPORTUNITIES);
   } else if (platform === 'facebook') {
     baseList = updateTimestamps(FACEBOOK_OPPORTUNITIES);
   } else if (platform === 'twitter') {
     baseList = updateTimestamps(TWITTER_OPPORTUNITIES);
   } else if (platform === 'reddit') {
-    baseList = updateTimestamps(REDDIT_OPPORTUNITIES);
+    // Real, live Reddit hiring posts (requires Reddit API creds in server/.env).
+    // Falls back to the seeded examples when not configured or offline.
+    const live = await fetchLiveLeads('reddit', keyword);
+    baseList = live.leads.length ? live.leads : updateTimestamps(REDDIT_OPPORTUNITIES);
   } else if (platform === 'custom_5_sites') {
     baseList = customOpps.filter(o => o.isCustom5Site);
   } else {
