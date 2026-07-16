@@ -80,7 +80,10 @@ export const fetchOpportunities = async ({
 
   let baseList = [];
   if (platform === 'linkedin') {
-    baseList = updateTimestamps(LINKEDIN_IT_OPPORTUNITIES);
+    // Real, live remote job/contract listings (Remotive + RemoteOK, no key).
+    // Falls back to the seeded examples if the backend is offline or dry.
+    const live = await fetchLiveLeads('remotejobs', keyword);
+    baseList = live.leads.length ? live.leads : updateTimestamps(LINKEDIN_IT_OPPORTUNITIES);
   } else if (platform === 'upwork') {
     // Real, live freelance/hiring leads from Hacker News (no API key required).
     // Falls back to the seeded examples if the backend is offline or dry.
