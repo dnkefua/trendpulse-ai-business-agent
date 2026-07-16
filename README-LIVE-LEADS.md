@@ -8,9 +8,10 @@ sources via a small backend API, instead of only showing seeded example data.
 | Tab / feature | Source | Status |
 |---|---|---|
 | **HN Freelance** | Hacker News "Who is hiring?" + "Seeking freelancer?" threads (Algolia API) | ✅ Real, **no API key needed** |
+| **Remote Jobs** | Remotive + RemoteOK job-board APIs (LinkedIn-equivalent listings) | ✅ Real, **no API key needed** |
 | **Reddit Hiring** | Reddit official OAuth API (`r/forhire`, `r/dataengineering`, …) | ✅ Real, **needs free Reddit app creds** |
 | **Google Trends** | Google Trends interest-over-time | ✅ Real on residential IPs; falls back to sample if rate-limited |
-| TikTok / LinkedIn / Facebook / Twitter | Seeded example data | ⚠️ Sample only (no free, ToS-compliant public API) |
+| TikTok / Facebook / Twitter | Seeded example data | ⚠️ Sample only (no free, ToS-compliant public API) |
 
 Every real lead carries the actual post URL, author, posted date, budget (when
 stated in the post), detected skills, and a demand score computed from real

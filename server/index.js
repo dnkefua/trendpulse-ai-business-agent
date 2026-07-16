@@ -17,6 +17,7 @@ import cors from 'cors';
 import { mineHackerNews } from './miners/hackernews.js';
 import { mineReddit } from './miners/reddit.js';
 import { mineGoogleTrends } from './miners/googleTrends.js';
+import { mineRemoteJobs } from './miners/remoteJobs.js';
 
 const app = express();
 const PORT = process.env.PORT || 8787;
@@ -29,6 +30,7 @@ app.get('/api/health', (_req, res) => {
     ok: true,
     sources: {
       hackernews: 'ready (no key required)',
+      remotejobs: 'ready (no key required)',
       reddit: process.env.REDDIT_CLIENT_ID ? 'configured' : 'needs REDDIT_CLIENT_ID/SECRET',
       googletrends: 'ready (may be rate-limited on datacenter IPs)',
     },
@@ -44,6 +46,11 @@ app.get('/api/leads', async (req, res) => {
     if (source === 'hackernews' || source === 'hn') {
       const leads = await mineHackerNews({ keyword });
       return res.json({ source: 'hackernews', live: true, count: leads.length, leads });
+    }
+
+    if (source === 'remotejobs' || source === 'jobs') {
+      const leads = await mineRemoteJobs({ keyword });
+      return res.json({ source: 'remotejobs', live: true, count: leads.length, leads });
     }
 
     if (source === 'reddit') {

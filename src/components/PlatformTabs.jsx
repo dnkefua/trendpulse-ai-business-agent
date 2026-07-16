@@ -58,8 +58,8 @@ export default function PlatformTabs({ activePlatform, setActivePlatform }) {
           }}
         >
           <Linkedin size={15} color={activePlatform === 'linkedin' ? 'var(--tiktok-cyan)' : 'var(--text-secondary)'} />
-          <span>LinkedIn IT</span>
-          <span className="badge badge-cyan" style={{ fontSize: '0.55rem', padding: '1px 4px' }}>Desmond</span>
+          <span>Remote Jobs</span>
+          <span className="badge badge-cyan" style={{ fontSize: '0.55rem', padding: '1px 4px' }}>Live</span>
         </button>
 
         {/* TAB 3: UPWORK & FREELANCE */}

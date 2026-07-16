@@ -14,8 +14,9 @@ export default function OpportunityCard({
   const isTwitter = opportunity.platform === 'Twitter / X';
   const isFacebook = opportunity.platform === 'Facebook';
   const isHackerNews = opportunity.platform === 'Hacker News';
-  const isLinkedIn = opportunity.platform === 'LinkedIn' || (opportunity.customPitch && !isTwitter && !isFacebook && !isUpwork && !isReddit && !isHackerNews);
-  const isB2B = isLinkedIn || isFacebook || isTwitter || isUpwork || isReddit || isHackerNews || opportunity.customPitch;
+  const isRemoteJobs = opportunity.platform === 'Remote Jobs';
+  const isLinkedIn = opportunity.platform === 'LinkedIn' || (opportunity.customPitch && !isTwitter && !isFacebook && !isUpwork && !isReddit && !isHackerNews && !isRemoteJobs);
+  const isB2B = isLinkedIn || isFacebook || isTwitter || isUpwork || isReddit || isHackerNews || isRemoteJobs || opportunity.customPitch;
 
   const [copiedQuote, setCopiedQuote] = useState(false);
 
@@ -58,6 +59,9 @@ export default function OpportunityCard({
   const getCategoryBadge = () => {
     if (isHackerNews) {
       return <span className="badge" style={{ background: 'rgba(255,102,0,0.15)', color: '#ff6600', border: '1px solid rgba(255,102,0,0.35)' }}>🟠 {opportunity.sourceTag || 'Hacker News'}</span>;
+    }
+    if (isRemoteJobs) {
+      return <span className="badge badge-cyan">💼 {opportunity.sourceTag || 'Remote Jobs'}</span>;
     }
     if (isReddit) {
       return <span className="badge" style={{ background: 'rgba(255,69,0,0.15)', color: '#ff4500', border: '1px solid rgba(255,69,0,0.3)' }}>🔴 Reddit {opportunity.subreddit || 'r/forhire'}</span>;
